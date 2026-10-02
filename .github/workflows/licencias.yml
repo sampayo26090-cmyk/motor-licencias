@@ -1,0 +1,85 @@
+name: Administrar licencias
+
+on:
+  workflow_dispatch:
+    inputs:
+      operacion:
+        description: Autorizar o revocar
+        required: true
+        type: choice
+        options: [autorizar, revocar]
+      alias:
+        description: Nombre interno del usuario
+        required: false
+        type: string
+      machine_hash:
+        description: Huella de solicitud_licencia.json
+        required: false
+        type: string
+      dias:
+        description: Días de vigencia
+        required: false
+        default: "30"
+        type: string
+      license_id:
+        description: ID completo únicamente para revocar
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  licencia:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install cryptography
+      - name: Restaurar clave privada temporal
+        env:
+          PRIVATE_KEY_B64: ${{ secrets.LICENSE_PRIVATE_KEY_B64 }}
+        run: |
+          python - <<'PY'
+          import os,base64,pathlib
+          valor=os.environ.get('PRIVATE_KEY_B64','')
+          if not valor:
+              raise SystemExit('Falta el secret LICENSE_PRIVATE_KEY_B64')
+          pathlib.Path('/tmp/licencia_key.pem').write_bytes(base64.b64decode(valor))
+          PY
+      - name: Autorizar
+        if: inputs.operacion == 'autorizar'
+        env:
+          ALIAS_USUARIO: ${{ inputs.alias }}
+          MACHINE_HASH: ${{ inputs.machine_hash }}
+          DIAS: ${{ inputs.dias }}
+        run: |
+          test -n "$ALIAS_USUARIO" && test -n "$MACHINE_HASH"
+          python admin_licencias.py --private-key /tmp/licencia_key.pem authorize \
+            --name "$ALIAS_USUARIO" \
+            --machine-hash "$MACHINE_HASH" \
+            --days "$DIAS"
+      - name: Revocar
+        if: inputs.operacion == 'revocar'
+        env:
+          LICENSE_ID: ${{ inputs.license_id }}
+        run: |
+          test -n "$LICENSE_ID"
+          python admin_licencias.py --private-key /tmp/licencia_key.pem revoke \
+            --license-id "$LICENSE_ID"
+      - name: Publicar lista firmada
+        run: |
+          git config user.name "license-bot"
+          git config user.email "license-bot@users.noreply.github.com"
+          git add autorizaciones.json autorizaciones_payload.json
+          git commit -m "Actualizar autorizaciones" || exit 0
+          git push
+      - name: Entregar licencia nueva
+        if: inputs.operacion == 'autorizar'
+        uses: actions/upload-artifact@v4
+        with:
+          name: licencia-nueva
+          path: licencias_emitidas/*.json
+          retention-days: 7
