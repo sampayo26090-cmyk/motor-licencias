@@ -1,5 +1,11 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-02T06:37:17Z",
-  "licenses": {}
+  "generated_at": "2026-10-02T07:04:42Z",
+  "licenses": {
+    "57100427a526656a1b1485f64999e0353991ea890aa5ae5efb7428d924791699": {
+      "machine_hash": "0405e71011d6bc7263558c97cc5eeb9ab6048b2cf98068539d3fd2d77fbdca65",
+      "status": "ACTIVE",
+      "expires_at": "2027-10-02T07:04:42Z"
+    }
+  }
 }
