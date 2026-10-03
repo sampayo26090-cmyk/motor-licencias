@@ -1,14 +1,18 @@
 {
   "payload": {
-    "schema": 1,
-    "generated_at": "2026-10-02T07:04:42Z",
+    "schema": 2,
+    "generated_at": 1791066598,
     "licenses": {
-      "57100427a526656a1b1485f64999e0353991ea890aa5ae5efb7428d924791699": {
-        "machine_hash": "0405e71011d6bc7263558c97cc5eeb9ab6048b2cf98068539d3fd2d77fbdca65",
-        "status": "ACTIVE",
-        "expires_at": "2027-10-02T07:04:42Z"
+      "jz4lDnRAh6pW0-uuTqNS8UvpUqEg7DdG": {
+        "name": "daniel",
+        "devices": [
+          "2bedd2cd907f75fc916b57e0838e07e412426a48392a4478bdef78366c11819f"
+        ],
+        "max_devices": 5,
+        "status": "active",
+        "updated_at": 1791066598
       }
     }
   },
-  "signature": "Q6KpMNMpsiOwTl67hrL4c3SgtDFrjfCPe5JiQ9qryFHb9zz3iSPOjE7YI09EDD5naIcSufQ9vR1N7Knsz/3cAA=="
+  "signature": "GyoppiHY2AAcvhFQi7PNIIi62tQ2zpZF1h9hb2tl4WSfjXl8qv56ZGcAkpYSDbGT7DdWmKhle0EC6YHRrrJnCw=="
 }
